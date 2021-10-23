@@ -44,9 +44,9 @@
 
 namespace hal::time {
 
-// clang-format off
 /// Names of the M41T82 RTC registers related to time values and their associated offsets.
-enum TimeRegisterName {
+enum TimeRegisterName
+{
     eHundredthsSeconds,
     eSeconds,
     eMinutes,
@@ -56,7 +56,6 @@ enum TimeRegisterName {
     eMonth,
     eYear
 };
-// clang-format on
 
 M41T82::M41T82(std::shared_ptr<i2c::II2c> i2c, std::uint16_t address)
     : m_i2c(std::move(i2c))
