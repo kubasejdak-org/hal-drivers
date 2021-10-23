@@ -37,7 +37,6 @@
 
 namespace hal::gpio {
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 IMcp23x17::IMcp23x17(mcp23x17::Port port,
                      std::chrono::milliseconds busTimeout,
                      std::chrono::milliseconds timeoutIn,
