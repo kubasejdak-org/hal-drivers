@@ -40,6 +40,7 @@
 #include <utils/bits/numerics.hpp>
 
 #include <cassert>
+#include <climits>
 #include <limits>
 #include <utility>
 
