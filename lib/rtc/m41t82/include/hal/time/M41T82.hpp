@@ -35,6 +35,8 @@
 #include "hal/i2c/II2c.hpp"
 #include "hal/time/IRtc.hpp"
 
+#include <utils/types/Result.hpp>
+
 #include <cstdint>
 #include <memory>
 #include <system_error>
@@ -72,7 +74,7 @@ public:
 
 private:
     /// @see IRtc::drvGetTime().
-    std::error_code drvGetTime(std::tm& tm) override;
+    Result<std::tm> drvGetTime() override;
 
     /// @see IRtc::drvSetTime().
     std::error_code drvSetTime(const std::tm& tm) override;

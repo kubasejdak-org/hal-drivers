@@ -35,6 +35,8 @@
 #include "hal/sensor/IHumiditySensor.hpp"
 #include "hal/sensor/Sht3xDisSensor.hpp"
 
+#include <utils/types/Result.hpp>
+
 #include <memory>
 #include <system_error>
 
@@ -49,7 +51,7 @@ public:
 
 private:
     /// @see IHumiditySensor::drvRead().
-    std::error_code drvRead(float& relativeHumidity) override;
+    Result<float> drvRead() override;
 
 private:
     std::shared_ptr<Sht3xDisSensor> m_sensor;

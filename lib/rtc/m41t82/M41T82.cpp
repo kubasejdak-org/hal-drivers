@@ -38,7 +38,6 @@
 
 #include <osal/Timeout.hpp>
 
-#include <array>
 #include <cassert>
 #include <utility>
 
@@ -91,7 +90,7 @@ M41T82::~M41T82()
     m_i2c->close();
 }
 
-std::error_code M41T82::drvGetTime(std::tm& tm)
+Result<std::tm> M41T82::drvGetTime()
 {
     osal::Timeout timeout = 100ms;
     i2c::ScopedI2c lock(m_i2c, timeout);
@@ -110,33 +109,32 @@ std::error_code M41T82::drvGetTime(std::tm& tm)
     }
 
     constexpr std::size_t cReadSize = 8;
-    std::array<std::uint8_t, cReadSize> registers{};
-    std::size_t successfulReadSize{};
-    if (auto error = m_i2c->read(m_cAddress, registers.data(), registers.size(), timeout, successfulReadSize)) {
+    auto [regs, error] = m_i2c->read(m_cAddress, cReadSize, timeout);
+    if (error) {
         M41T82Logger::warn("Failed to read: I2C read() returned err={} (timeout={} ms)",
                            error.message(),
                            osal::durationMs(timeout));
         return error;
     }
 
-    if (successfulReadSize != registers.size()) {
-        M41T82Logger::error("Failed to read: wrong read size: expected={}, actual={}",
-                            registers.size(),
-                            successfulReadSize);
+    auto registers = *regs;
+    if (registers.size() != cReadSize) {
+        M41T82Logger::error("Failed to read: wrong read size: expected={}, actual={}", cReadSize, registers.size());
         return Error::eHardwareError;
     }
 
     // Assume year is 20YY, not 19YY and ignore the century bit.
     auto bcdToBin = [](std::uint8_t x) { return (x & 0x0f) + (x >> 4) * 10; }; // NOLINT
-    tm.tm_sec = bcdToBin(registers[eSeconds] & std::uint8_t(0x7f));            // NOLINT
-    tm.tm_min = bcdToBin(registers[eMinutes] & 0x7f);                          // NOLINT
-    tm.tm_hour = bcdToBin(registers[eHours] & 0x3f);                           // NOLINT
-    tm.tm_mday = bcdToBin(registers[eDay] & 0x3f);                             // NOLINT
-    tm.tm_mon = bcdToBin(registers[eMonth] & 0x1f) - 1;                        // NOLINT
-    tm.tm_year = bcdToBin(registers[eYear]) + 100;                             // NOLINT
-    tm.tm_wday = registers[eWeekDay] & 0x07;                                   // NOLINT
 
-    return Error::eOk;
+    std::tm tm{};
+    tm.tm_sec = bcdToBin(registers[eSeconds] & std::uint8_t(0x7f)); // NOLINT
+    tm.tm_min = bcdToBin(registers[eMinutes] & 0x7f);               // NOLINT
+    tm.tm_hour = bcdToBin(registers[eHours] & 0x3f);                // NOLINT
+    tm.tm_mday = bcdToBin(registers[eDay] & 0x3f);                  // NOLINT
+    tm.tm_mon = bcdToBin(registers[eMonth] & 0x1f) - 1;             // NOLINT
+    tm.tm_year = bcdToBin(registers[eYear]) + 100;                  // NOLINT
+    tm.tm_wday = registers[eWeekDay] & 0x07;                        // NOLINT
+    return tm;
 }
 
 std::error_code M41T82::drvSetTime(const std::tm& tm)
