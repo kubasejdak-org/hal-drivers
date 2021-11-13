@@ -128,8 +128,8 @@ Result<Sht3xMeasurement> Sht3xDisSensor::getMeasurement()
         return error;
     }
 
-    auto rawTemperature = ((std::uint16_t((*bytes)[0]) << 8U) | std::uint16_t((*bytes)[1])); // NOLINT
-    auto rawHumidity = ((std::uint16_t((*bytes)[3]) << 8U) | std::uint16_t((*bytes)[4]));    // NOLINT
+    auto rawTemperature = std::uint16_t(bytes->at(0) << 8U) | std::uint16_t(bytes->at(1)); // NOLINT
+    auto rawHumidity = std::uint16_t(bytes->at(3) << 8U) | std::uint16_t(bytes->at(4));    // NOLINT
 
     m_measurement.temperature = rawTemperatureToPhysical(rawTemperature);
     m_measurement.relativeHumidity = rawHumidityToPhysical(rawHumidity);

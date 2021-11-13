@@ -111,7 +111,7 @@ Result<std::uint8_t> Mcp23017::i2cRead(std::uint8_t address, osal::Timeout timeo
     if (error)
         return error;
 
-    return (*value)[0];
+    return value->at(0);
 }
 
 std::error_code Mcp23017::i2cWrite(std::uint8_t address, std::uint8_t value, osal::Timeout timeout)
