@@ -40,14 +40,13 @@ Sht3xDisHumidity::Sht3xDisHumidity(std::shared_ptr<Sht3xDisSensor> sensor)
     : m_sensor(std::move(sensor))
 {}
 
-std::error_code Sht3xDisHumidity::drvRead(float& relativeHumidity)
+Result<float> Sht3xDisHumidity::drvRead()
 {
-    Sht3xMeasurement measurement{};
-    auto error = m_sensor->getMeasurement(measurement);
-    if (!error)
-        relativeHumidity = measurement.relativeHumidity;
+    auto [measurement, error] = m_sensor->getMeasurement();
+    if (error)
+        return error;
 
-    return error;
+    return (*measurement).relativeHumidity;
 }
 
 } // namespace hal::sensor

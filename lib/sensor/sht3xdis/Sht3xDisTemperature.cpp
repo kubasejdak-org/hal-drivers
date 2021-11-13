@@ -40,14 +40,13 @@ Sht3xDisTemperature::Sht3xDisTemperature(std::shared_ptr<Sht3xDisSensor> sensor)
     : m_sensor(std::move(sensor))
 {}
 
-std::error_code Sht3xDisTemperature::drvRead(float& temperature)
+Result<float> Sht3xDisTemperature::drvRead()
 {
-    Sht3xMeasurement measurement{};
-    auto error = m_sensor->getMeasurement(measurement);
-    if (!error)
-        temperature = measurement.temperature;
+    auto [measurement, error] = m_sensor->getMeasurement();
+    if (error)
+        return error;
 
-    return error;
+    return (*measurement).temperature;
 }
 
 } // namespace hal::sensor

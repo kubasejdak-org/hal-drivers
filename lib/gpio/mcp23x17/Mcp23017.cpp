@@ -86,9 +86,9 @@ Mcp23017::~Mcp23017()
     m_i2c->close();
 }
 
-std::error_code Mcp23017::readCommand(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout)
+Result<std::uint8_t> Mcp23017::readCommand(std::uint8_t address, osal::Timeout timeout)
 {
-    return i2cRead(address, response, timeout);
+    return i2cRead(address, timeout);
 }
 
 std::error_code Mcp23017::writeCommand(std::uint8_t address, std::uint8_t value, osal::Timeout timeout)
@@ -96,7 +96,7 @@ std::error_code Mcp23017::writeCommand(std::uint8_t address, std::uint8_t value,
     return i2cWrite(address, value, timeout);
 }
 
-std::error_code Mcp23017::i2cRead(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout)
+Result<std::uint8_t> Mcp23017::i2cRead(std::uint8_t address, osal::Timeout timeout)
 {
     i2c::ScopedI2c lock(m_i2c, timeout);
     if (!lock.isAcquired()) {
@@ -104,13 +104,14 @@ std::error_code Mcp23017::i2cRead(std::uint8_t address, std::uint8_t& response, 
         return Error::eTimeout;
     }
 
-    auto error = m_i2c->write(m_cAddress, {address}, true, timeout);
-    if (!error) {
-        std::size_t actualReadSize{};
-        error = m_i2c->read(m_cAddress, &response, 1, timeout, actualReadSize);
-    }
+    if (auto error = m_i2c->write(m_cAddress, {address}, true, timeout))
+        return error;
 
-    return error;
+    auto [value, error] = m_i2c->read(m_cAddress, 1, timeout);
+    if (error)
+        return error;
+
+    return value->at(0);
 }
 
 std::error_code Mcp23017::i2cWrite(std::uint8_t address, std::uint8_t value, osal::Timeout timeout)

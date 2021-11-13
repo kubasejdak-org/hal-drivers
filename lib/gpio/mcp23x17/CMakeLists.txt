@@ -10,6 +10,6 @@ target_include_directories(hal-gpio-mcp23x17
 )
 
 target_link_libraries(hal-gpio-mcp23x17
-    PUBLIC hal::interfaces osal::cpp
+    PUBLIC hal::interfaces utils::types osal::cpp
     PRIVATE hal::drivers-logger
 )
