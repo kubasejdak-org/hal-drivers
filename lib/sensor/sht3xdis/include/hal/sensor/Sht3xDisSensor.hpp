@@ -37,6 +37,7 @@
 
 #include <osal/Mutex.hpp>
 #include <osal/timestamp.hpp>
+#include <utils/types/Result.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -88,8 +89,8 @@ public:
 
     /// Returns the converted measurements of this instance of the SHT3x sensor.
     /// @param measurement          Output variable where the measurement will be stored.
-    /// @return Error code of the operation.
-    std::error_code getMeasurement(Sht3xMeasurement& measurement);
+    /// @return Measurement or error code of the operation.
+    Result<Sht3xMeasurement> getMeasurement();
 
 private:
     std::shared_ptr<i2c::II2c> m_i2c;

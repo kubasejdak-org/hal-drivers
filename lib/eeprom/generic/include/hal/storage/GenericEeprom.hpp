@@ -36,6 +36,7 @@
 #include "hal/storage/IEeprom.hpp"
 
 #include <osal/Timeout.hpp>
+#include <utils/types/Result.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -94,11 +95,8 @@ private:
     drvWrite(std::uint32_t address, const std::uint8_t* bytes, std::size_t size, osal::Timeout timeout) override;
 
     /// @see IEeprom::drvRead().
-    std::error_code drvRead(std::uint32_t address,
-                            std::uint8_t* bytes,
-                            std::size_t size,
-                            osal::Timeout timeout,
-                            std::size_t& actualReadSize) override;
+    Result<std::size_t>
+    drvRead(std::uint32_t address, std::uint8_t* bytes, std::size_t size, osal::Timeout timeout) override;
 
     /// Writes at most one page of data into EEPROM device.
     /// @param address              Location address, where the data should be stored.

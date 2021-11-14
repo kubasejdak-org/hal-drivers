@@ -69,7 +69,7 @@ std::error_code IMcp23x17::setDirection(std::uint8_t mask)
     return Error::eOk;
 }
 
-std::error_code IMcp23x17::get(std::uint8_t& value)
+Result<std::uint8_t> IMcp23x17::get()
 {
     if (!isInitialized()) {
         Mcp23x17Logger::error("Driver is not initialized");
@@ -81,18 +81,18 @@ std::error_code IMcp23x17::get(std::uint8_t& value)
         Mcp23x17Logger::trace("Read transfer required: cacheExpired={}", cacheExpired);
 
         auto regAddr = (m_cPort == mcp23x17::Port::eGpioA) ? mcp23x17::Bank0::eGPIOA : mcp23x17::Bank0::eGPIOB;
-        if (auto error = readCommand(regAddr, m_cacheIn, m_cBusTimeout)) {
+        auto [value, error] = readCommand(regAddr, m_cBusTimeout);
+        if (error) {
             Mcp23x17Logger::error("Failed to read value: err={}", error.message());
             return error;
         }
 
         Mcp23x17Logger::trace("Read port value {:#04x} from register {:#04x}", m_cacheIn, regAddr);
-
+        m_cacheIn = *value;
         m_timeoutIn.reset();
     }
 
-    value = m_cacheIn;
-    return Error::eOk;
+    return m_cacheIn;
 }
 
 std::error_code IMcp23x17::set(std::uint8_t value)

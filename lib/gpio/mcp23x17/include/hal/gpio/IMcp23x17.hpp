@@ -36,6 +36,7 @@
 #include "hal/gpio/Mcp23x17Common.hpp"
 
 #include <osal/Timeout.hpp>
+#include <utils/types/Result.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -70,10 +71,9 @@ public:
 
     /// Performs read command from the MCP23x17 register over underlying bus.
     /// @param address          Address of the register.
-    /// @param response         Output parameter with the response from the device.
     /// @param timeout          Maximal time to wait for the bus.
-    /// @return Error code of the operation.
-    virtual std::error_code readCommand(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout) = 0;
+    /// @return Port value or error code of the operation.
+    virtual Result<std::uint8_t> readCommand(std::uint8_t address, osal::Timeout timeout) = 0;
 
     /// Performs write command to the MCP23x17 register over underlying bus.
     /// @param address          Address of the register.
@@ -87,7 +87,7 @@ private:
     std::error_code setDirection(std::uint8_t mask) override;
 
     /// @see IGpioRegister::get().
-    std::error_code get(std::uint8_t& value) override;
+    Result<std::uint8_t> get() override;
 
     /// @see IGpioRegister::set().
     std::error_code set(std::uint8_t value) override;

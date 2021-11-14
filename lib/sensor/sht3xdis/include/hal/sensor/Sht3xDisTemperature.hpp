@@ -35,6 +35,8 @@
 #include "hal/sensor/ITemperatureSensor.hpp"
 #include "hal/sensor/Sht3xDisSensor.hpp"
 
+#include <utils/types/Result.hpp>
+
 #include <memory>
 #include <system_error>
 
@@ -55,7 +57,7 @@ public:
 
 private:
     /// @see ITemperatureSensor::drvRead().
-    std::error_code drvRead(float& temperature) override;
+    Result<float> drvRead() override;
 
 private:
     std::shared_ptr<Sht3xDisSensor> m_sensor;

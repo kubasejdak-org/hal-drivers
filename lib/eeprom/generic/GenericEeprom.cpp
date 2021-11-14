@@ -138,11 +138,8 @@ GenericEeprom::drvWrite(std::uint32_t address, const std::uint8_t* bytes, std::s
     return Error::eOk;
 }
 
-std::error_code GenericEeprom::drvRead(std::uint32_t address,
-                                       std::uint8_t* bytes,
-                                       std::size_t size,
-                                       osal::Timeout timeout,
-                                       std::size_t& actualReadSize)
+Result<std::size_t>
+GenericEeprom::drvRead(std::uint32_t address, std::uint8_t* bytes, std::size_t size, osal::Timeout timeout)
 {
     if (!isInitialized()) {
         GenericEepromLogger::error("Failed to read: driver is not initialized");
@@ -151,7 +148,6 @@ std::error_code GenericEeprom::drvRead(std::uint32_t address,
 
     osal::sleepUntilExpired(m_writeDelay);
 
-    actualReadSize = 0;
     GenericEepromLogger::debug("Starting read transaction of {:#x} bytes from {:#x} address", size, address);
 
     auto currentAddress = address;
@@ -160,8 +156,7 @@ std::error_code GenericEeprom::drvRead(std::uint32_t address,
 
     while (toRead != 0) {
         auto [deviceAddress, readAddress] = normalizeAddresses(m_address, currentAddress);
-        std::size_t readSize
-            = std::min(toRead, std::size_t(std::numeric_limits<std::uint16_t>::max()) + 1 - readAddress);
+        auto readSize = std::min(toRead, std::size_t(std::numeric_limits<std::uint16_t>::max()) + 1 - readAddress);
 
         GenericEepromLogger::trace("Normalized read: deviceAddress={:#x}, readAddress={:#x}, readSize={:#x}",
                                    deviceAddress,
@@ -183,23 +178,21 @@ std::error_code GenericEeprom::drvRead(std::uint32_t address,
             return error;
         }
 
-        std::size_t successfulReadSize{};
-        if (auto error = m_i2c->read(deviceAddress, currentBytes, readSize, timeout, successfulReadSize)) {
+        auto [actualReadSize, error] = m_i2c->read(deviceAddress, currentBytes, readSize, timeout);
+        if (error) {
             GenericEepromLogger::warn("Failed to read: I2C read() returned err={} (timeout={} ms)",
                                       error.message(),
                                       osal::durationMs(timeout));
             return error;
         }
 
-        currentAddress += successfulReadSize;
-        currentBytes += successfulReadSize;
-        toRead -= successfulReadSize;
+        currentAddress += *actualReadSize;
+        currentBytes += *actualReadSize;
+        toRead -= *actualReadSize;
     }
 
-    actualReadSize = size;
-
-    GenericEepromLogger::trace("Successfully read {:#x} bytes", actualReadSize);
-    return Error::eOk;
+    GenericEepromLogger::trace("Successfully read {:#x} bytes", size);
+    return size;
 }
 
 std::error_code

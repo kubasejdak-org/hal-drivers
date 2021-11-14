@@ -35,6 +35,9 @@
 #include "hal/gpio/IMcp23x17.hpp"
 #include "hal/i2c/II2c.hpp"
 
+#include <osal/Timeout.hpp>
+#include <utils/types/Result.hpp>
+
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -82,17 +85,16 @@ public:
 
 private:
     /// @see IMcp23x17::readCommand().
-    std::error_code readCommand(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout) override;
+    Result<std::uint8_t> readCommand(std::uint8_t address, osal::Timeout timeout) override;
 
     /// @see IMcp23x17::writeCommand().
     std::error_code writeCommand(std::uint8_t address, std::uint8_t value, osal::Timeout timeout) override;
 
     /// Performs read command from the MCP23017 register over I2C bus.
     /// @param address          Address of the register.
-    /// @param response         Output parameter with the response from the device.
     /// @param timeout          Maximal time to wait for the bus.
-    /// @return Error code of the operation.
-    std::error_code i2cRead(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout);
+    /// @return Port value or error code of the operation.
+    Result<std::uint8_t> i2cRead(std::uint8_t address, osal::Timeout timeout);
 
     /// Performs write command to the MCP23017 register over I2C bus.
     /// @param address          Address of the register.
