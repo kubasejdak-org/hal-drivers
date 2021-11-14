@@ -98,17 +98,13 @@ Sht3xDisSensor::~Sht3xDisSensor()
     m_i2c->close();
 }
 
-std::error_code Sht3xDisSensor::getMeasurement(Sht3xMeasurement& measurement)
+Result<Sht3xMeasurement> Sht3xDisSensor::getMeasurement()
 {
-    measurement.temperature = 0.0F;
-    measurement.relativeHumidity = 0.0F;
-
     osal::ScopedLock measurementLock(m_mutex);
 
     if (!m_cacheTimeout.isExpired()) {
         Sht3xLogger::trace("Cache didn't expire, using old value");
-        measurement = m_measurement;
-        return Error::eOk;
+        return m_measurement;
     }
 
     i2c::ScopedI2c lock(m_i2c);
@@ -125,22 +121,21 @@ std::error_code Sht3xDisSensor::getMeasurement(Sht3xMeasurement& measurement)
         return error;
     }
 
-    BytesVector bytes;
     constexpr int cReadSize = 6;
-    if (auto error = m_i2c->read(m_address, bytes, cReadSize, timeout)) {
+    auto [bytes, error] = m_i2c->read(m_address, cReadSize, timeout);
+    if (error) {
         Sht3xLogger::error("Failed to get measurement: I2C read returned err={}", error.message());
         return error;
     }
 
-    auto rawTemperature = ((std::uint16_t(bytes[0]) << 8U) | std::uint16_t(bytes[1])); // NOLINT
-    auto rawHumidity = ((std::uint16_t(bytes[3]) << 8U) | std::uint16_t(bytes[4]));    // NOLINT
+    auto rawTemperature = std::uint16_t(bytes->at(0) << 8U) | std::uint16_t(bytes->at(1)); // NOLINT
+    auto rawHumidity = std::uint16_t(bytes->at(3) << 8U) | std::uint16_t(bytes->at(4));    // NOLINT
 
     m_measurement.temperature = rawTemperatureToPhysical(rawTemperature);
     m_measurement.relativeHumidity = rawHumidityToPhysical(rawHumidity);
     m_cacheTimeout.reset();
 
-    measurement = m_measurement;
-    return Error::eOk;
+    return m_measurement;
 }
 
 } // namespace hal::sensor

@@ -78,9 +78,9 @@ Mcp23S17::~Mcp23S17()
         m_spi->close();
 }
 
-std::error_code Mcp23S17::readCommand(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout)
+Result<std::uint8_t> Mcp23S17::readCommand(std::uint8_t address, osal::Timeout timeout)
 {
-    return spiRead(address, response, timeout);
+    return spiRead(address, timeout);
 }
 
 std::error_code Mcp23S17::writeCommand(std::uint8_t address, std::uint8_t value, osal::Timeout timeout)
@@ -88,7 +88,7 @@ std::error_code Mcp23S17::writeCommand(std::uint8_t address, std::uint8_t value,
     return spiWrite(address, value, timeout);
 }
 
-std::error_code Mcp23S17::spiRead(std::uint8_t address, std::uint8_t& response, osal::Timeout timeout)
+Result<std::uint8_t> Mcp23S17::spiRead(std::uint8_t address, osal::Timeout timeout)
 {
     std::array<std::uint8_t, 3> spiCmd{};
     constexpr std::uint8_t cReadCmd = 0x01;
@@ -103,10 +103,11 @@ std::error_code Mcp23S17::spiRead(std::uint8_t address, std::uint8_t& response, 
     }
 
     std::array<std::uint8_t, 3> spiResponse{};
-    std::size_t actualReadSize{};
-    auto result = m_spi->transfer(spiCmd.data(), spiResponse.data(), spiCmd.size(), timeout, actualReadSize);
-    response = spiResponse[2];
-    return result;
+    auto [actualReadSize, error] = m_spi->transfer(spiCmd.data(), spiResponse.data(), spiCmd.size(), timeout);
+    if (error)
+        return error;
+
+    return spiResponse[2];
 }
 
 std::error_code Mcp23S17::spiWrite(std::uint8_t address, std::uint8_t value, osal::Timeout timeout)
