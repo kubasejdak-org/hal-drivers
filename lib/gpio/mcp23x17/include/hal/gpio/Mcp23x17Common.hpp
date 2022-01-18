@@ -4,7 +4,7 @@
 /// @author Kuba Sejdak
 /// @copyright BSD 2-Clause License
 ///
-/// Copyright (c) 2020-2021, Kuba Sejdak <kuba.sejdak@gmail.com>
+/// Copyright (c) 2020-2022, Kuba Sejdak <kuba.sejdak@gmail.com>
 /// All rights reserved.
 ///
 /// Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,7 @@
 namespace hal::gpio::mcp23x17 {
 
 /// Represents used register addresses of the BANK0 mode in the MCP23x17 device.
-enum Bank0
-{
+enum Bank0 {
     eIODIRA = 0x00,
     eIODIRB = 0x01,
     eIOCON = 0x0a,
@@ -45,14 +44,12 @@ enum Bank0
 };
 
 /// Represents flag for setting individual bits of the IOCON register in the MCP23x17 device.
-enum IOCON
-{
+enum IOCON {
     eHAEN = (1U << 3U)
 };
 
 /// Represents id of the 8-bit port in the MCP23x17 device.
-enum class Port
-{
+enum class Port {
     eGpioA,
     eGpioB
 };

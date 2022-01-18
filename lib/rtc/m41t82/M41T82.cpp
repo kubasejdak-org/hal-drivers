@@ -4,7 +4,7 @@
 /// @author Kuba Sejdak
 /// @copyright BSD 2-Clause License
 ///
-/// Copyright (c) 2020-2021, Kuba Sejdak <kuba.sejdak@gmail.com>
+/// Copyright (c) 2020-2022, Kuba Sejdak <kuba.sejdak@gmail.com>
 /// All rights reserved.
 ///
 /// Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,7 @@
 namespace hal::time {
 
 /// Names of the M41T82 RTC registers related to time values and their associated offsets.
-enum TimeRegisterName
-{
+enum TimeRegisterName {
     eHundredthsSeconds,
     eSeconds,
     eMinutes,
