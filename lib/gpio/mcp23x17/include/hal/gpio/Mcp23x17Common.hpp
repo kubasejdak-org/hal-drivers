@@ -32,6 +32,10 @@
 
 #pragma once
 
+#include <fmt/core.h>
+
+#include <string_view>
+
 namespace hal::gpio::mcp23x17 {
 
 /// Represents used register addresses of the BANK0 mode in the MCP23x17 device.
@@ -55,3 +59,21 @@ enum class Port {
 };
 
 } // namespace hal::gpio::mcp23x17
+
+template <>
+struct fmt::formatter<hal::gpio::mcp23x17::Bank0> : fmt::formatter<std::string_view> {
+    template <typename FormatContext>
+    auto format(hal::gpio::mcp23x17::Bank0 value, FormatContext& ctx)
+    {
+        std::string_view name;
+        switch (value) {
+            case hal::gpio::mcp23x17::Bank0::eIODIRA: name = "IODIRA"; break;
+            case hal::gpio::mcp23x17::Bank0::eIODIRB: name = "IODIRB"; break;
+            case hal::gpio::mcp23x17::Bank0::eIOCON: name = "IOCON"; break;
+            case hal::gpio::mcp23x17::Bank0::eGPIOA: name = "GPIOA"; break;
+            case hal::gpio::mcp23x17::Bank0::eGPIOB: name = "GPIOB"; break;
+        }
+
+        return fmt::formatter<std::string_view>::format(name, ctx);
+    }
+};
