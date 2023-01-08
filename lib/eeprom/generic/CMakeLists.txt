@@ -8,6 +8,6 @@ target_include_directories(hal-eeprom-generic
 )
 
 target_link_libraries(hal-eeprom-generic
-    PUBLIC hal::interfaces utils::types osal::cpp
+    PUBLIC hal::interfaces osal::cpp utils::types
     PRIVATE hal::drivers-logger utils::bits
 )

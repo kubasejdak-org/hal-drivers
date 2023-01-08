@@ -10,6 +10,6 @@ target_include_directories(hal-sensor-sht3xdis
 )
 
 target_link_libraries(hal-sensor-sht3xdis
-    PUBLIC hal::interfaces utils::types osal::cpp
+    PUBLIC hal::interfaces osal::cpp utils::types
     PRIVATE hal::drivers-logger
 )
