@@ -36,9 +36,9 @@
 #include "hal/storage/IEeprom.hpp"
 
 #include <osal/Timeout.hpp>
-#include <utils/types/Result.hpp>
 
 #include <chrono>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <system_error>

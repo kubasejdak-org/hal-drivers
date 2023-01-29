@@ -33,16 +33,14 @@
 #pragma once
 
 #include "hal/i2c/II2c.hpp"
-#include "hal/sensor/IHumiditySensor.hpp"
 
 #include <osal/Mutex.hpp>
-#include <osal/timestamp.hpp>
+#include <osal/Timeout.hpp>
 #include <utils/types/Result.hpp>
 
 #include <chrono>
 #include <cstdint>
 #include <memory>
-#include <system_error>
 
 namespace hal::sensor {
 
