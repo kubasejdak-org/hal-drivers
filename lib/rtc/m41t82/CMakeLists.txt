@@ -8,6 +8,6 @@ target_include_directories(hal-rtc-m41t82
 )
 
 target_link_libraries(hal-rtc-m41t82
-    PUBLIC hal::interfaces utils::types
+    PUBLIC hal::interfaces
     PRIVATE hal::drivers-logger osal::cpp
 )

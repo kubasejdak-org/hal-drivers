@@ -36,7 +36,6 @@
 #include "hal/logger/drivers.hpp"
 
 #include <osal/ScopedLock.hpp>
-#include <osal/sleep.hpp>
 
 #include <cassert>
 #include <cmath>

@@ -35,10 +35,7 @@
 #include "hal/sensor/ITemperatureSensor.hpp"
 #include "hal/sensor/Sht3xDisSensor.hpp"
 
-#include <utils/types/Result.hpp>
-
 #include <memory>
-#include <system_error>
 
 namespace hal::sensor {
 

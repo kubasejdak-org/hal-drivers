@@ -35,9 +35,11 @@
 #include "hal/Error.hpp"
 #include "hal/i2c/ScopedI2c.hpp"
 #include "hal/logger/drivers.hpp"
+#include "hal/types.hpp"
 
 #include <osal/Timeout.hpp>
 
+#include <array>
 #include <cassert>
 #include <utility>
 

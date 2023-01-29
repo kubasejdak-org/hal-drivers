@@ -35,11 +35,8 @@
 #include "hal/i2c/II2c.hpp"
 #include "hal/time/IRtc.hpp"
 
-#include <utils/types/Result.hpp>
-
 #include <cstdint>
 #include <memory>
-#include <system_error>
 
 namespace hal::time {
 
